@@ -33,7 +33,6 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		y=0;
         murderInfo = selectMurderInfo();
         cardDeck = setCardDeck();
-        cards = setCards();
 		removeMurderFromCardDeck();
 	}
 
@@ -72,11 +71,10 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		g2d.setFont( new Font("Broadway", Font.BOLD, 50));
 		
 		g2d.drawString("Hello!" , x, y);
-		
+		cards = setCards();
 		//System.out.println(cardDeck);
-        System.out.println("Selected Murder Info: "+murderInfo);
+       // System.out.println("Selected Murder Info: "+murderInfo);
         //removeMurderFromCardDeck();
-		setCards();
 		System.out.println("my cards: "+cards);
        // System.out.println(cardDeck);
 		twoDgraph.drawImage(back, null, 0, 0);
@@ -85,16 +83,19 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 
   
     public ArrayList<String> setCards(){
-        ArrayList<String> temp = new ArrayList<String>();
-		temp.addAll(cardDeck.get("Suspect"));
-		temp.addAll(cardDeck.get("Weapon"));
-		temp.addAll(cardDeck.get("Room"));
-		Collections.shuffle(temp);
-		ArrayList<String> mycards = new ArrayList<String>();
-		for(int i=0; i<5; i++){
-			mycards.add(temp.get(i));
+		if(numPlayers!=0){
+			ArrayList<String> temp = new ArrayList<String>();
+			temp.addAll(cardDeck.get("Suspect"));
+			temp.addAll(cardDeck.get("Weapon"));
+			temp.addAll(cardDeck.get("Room"));
+			Collections.shuffle(temp);
+			ArrayList<String> mycards = new ArrayList<String>();
+			for(int i=0; i<(int)(cardDeck.size()/numPlayers); i++){
+				mycards.add(temp.get(i));
+			}
+			return mycards;
 		}
-        return mycards;
+		return null;
     }
 
     // SETTER METHODS
@@ -186,8 +187,13 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		key= e.getKeyCode();
 		System.out.println(key);
 		if(screenStatus.equals("Start")){
-			numPlayers = (int)e.getKeyChar();
+			if(e.getKeyCode()-48>0 && e.getKeyCode()-48<=6){
+				numPlayers = e.getKeyCode()-48;
 			System.out.println(numPlayers);
+			}
+			else{
+				numPlayers = 1;
+			}
 		}
 		//48-57 correlates to 0-
 		
