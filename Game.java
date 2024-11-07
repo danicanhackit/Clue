@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.awt.event.*; 
@@ -17,8 +18,10 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 
     private HashMap <String, ArrayList<String>> cardDeck;
     private HashMap <String, String> murderInfo;
-    private ArrayList<Card> cards;
+    private ArrayList<String> cards;
 
+	private String screenStatus = "Start";
+	private int numPlayers = 0;
 	
 	public Game() {
 		new Thread(this).start();	
@@ -31,6 +34,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
         murderInfo = selectMurderInfo();
         cardDeck = setCardDeck();
         cards = setCards();
+		removeMurderFromCardDeck();
 	}
 
 	
@@ -71,17 +75,28 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		
 		//System.out.println(cardDeck);
         System.out.println("Selected Murder Info: "+murderInfo);
-        removeMurderFromCardDeck();
-        System.out.println(cardDeck);
+        //removeMurderFromCardDeck();
+		setCards();
+		System.out.println("my cards: "+cards);
+       // System.out.println(cardDeck);
 		twoDgraph.drawImage(back, null, 0, 0);
 
 	}
 
   
-    public ArrayList<Card> setCards(){
-        ArrayList<Card> temp = new ArrayList<Card>();
-        return temp;
+    public ArrayList<String> setCards(){
+        ArrayList<String> temp = new ArrayList<String>();
+		temp.addAll(cardDeck.get("Suspect"));
+		temp.addAll(cardDeck.get("Weapon"));
+		temp.addAll(cardDeck.get("Room"));
+		Collections.shuffle(temp);
+		ArrayList<String> mycards = new ArrayList<String>();
+		for(int i=0; i<5; i++){
+			mycards.add(temp.get(i));
+		}
+        return mycards;
     }
+
     // SETTER METHODS
     public HashMap<String, ArrayList<String>> setCardDeck(){
         HashMap<String, ArrayList<String>> temp = new HashMap<String, ArrayList<String>>();
@@ -170,8 +185,11 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		
 		key= e.getKeyCode();
 		System.out.println(key);
-		
-		
+		if(screenStatus.equals("Start")){
+			numPlayers = (int)e.getKeyChar();
+			System.out.println(numPlayers);
+		}
+		//48-57 correlates to 0-
 		
 	
 	}
