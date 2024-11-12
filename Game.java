@@ -18,10 +18,12 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 
     private HashMap <String, ArrayList<String>> cardDeck;
     private HashMap <String, String> murderInfo;
-    private ArrayList<String> cards;
+    private ArrayList<String> myHand;
+	private ArrayList<ArrayList<String>> allHands;
 
-	private String screenStatus = "Start";
+	private String screenStatus = "Loading";
 	private int numPlayers = 0;
+	private boolean needNumPlayers = true;
 	
 	public Game() {
 		new Thread(this).start();	
@@ -70,33 +72,53 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	
 		g2d.setFont( new Font("Broadway", Font.BOLD, 50));
 		
-		g2d.drawString("Hello!" , x, y);
-		cards = setCards();
-		//System.out.println(cardDeck);
-       // System.out.println("Selected Murder Info: "+murderInfo);
-        //removeMurderFromCardDeck();
-		System.out.println("my cards: "+cards);
-       // System.out.println(cardDeck);
+	
+		if(screenStatus.equals("Loading")){
+			g2d.drawString("Hello!" , x, y);
+		} else if(screenStatus.equals("Start")){
+			startGameplay(g2d);
+		}
+		
+       	System.out.println("Selected Murder Info: "+murderInfo);
+		System.out.println("my cards: "+myHand);
 		twoDgraph.drawImage(back, null, 0, 0);
 
 	}
 
-  
-    public ArrayList<String> setCards(){
-		if(numPlayers!=0){
-			ArrayList<String> temp = new ArrayList<String>();
-			temp.addAll(cardDeck.get("Suspect"));
-			temp.addAll(cardDeck.get("Weapon"));
-			temp.addAll(cardDeck.get("Room"));
-			Collections.shuffle(temp);
-			ArrayList<String> mycards = new ArrayList<String>();
-			for(int i=0; i<(int)(cardDeck.size()/numPlayers); i++){
-				mycards.add(temp.get(i));
-			}
-			return mycards;
+	public void startGameplay(Graphics g2d){
+		myHand = shuffleAndDealCards();
+	}
+
+    public ArrayList<String> shuffleAndDealCards(){
+		ArrayList<String> temp = new ArrayList<String>();
+		temp.addAll(cardDeck.get("Suspect"));
+		temp.addAll(cardDeck.get("Weapon"));
+		temp.addAll(cardDeck.get("Room"));
+		Collections.shuffle(temp);
+		System.out.println("Card deck size: " + temp.size());
+		System.out.println("Num players: "+ numPlayers);
+		ArrayList<String> mycards = new ArrayList<String>();
+		for(int i=0; i<(int)(temp.size()/numPlayers); i++){
+			mycards.add(temp.get(i));
 		}
-		return null;
-    }
+		return mycards;
+	}
+
+	public ArrayList<ArrayList<String>> shuffleAndDealCards2(){
+		ArrayList<String> temp = new ArrayList<String>();
+		temp.addAll(cardDeck.get("Suspect"));
+		temp.addAll(cardDeck.get("Weapon"));
+		temp.addAll(cardDeck.get("Room"));
+		Collections.shuffle(temp);
+		System.out.println("Card deck size: " + temp.size());
+		System.out.println("Num players: "+ numPlayers);
+		ArrayList<ArrayList<String>> mycards = new ArrayList<ArrayList<String>>();
+		for(int i=0; i<numPlayers); i++){
+			mycards.add(temp.get(i));
+		}
+		return mycards;
+	}
+
 
     // SETTER METHODS
     public HashMap<String, ArrayList<String>> setCardDeck(){
@@ -186,19 +208,22 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		
 		key= e.getKeyCode();
 		System.out.println(key);
-		if(screenStatus.equals("Start")){
-			if(e.getKeyCode()-48>0 && e.getKeyCode()-48<=6){
+		if(e.getKeyCode()-48>0 && e.getKeyCode()-48<=6){
+			if(needNumPlayers){
 				numPlayers = e.getKeyCode()-48;
-			System.out.println(numPlayers);
-			}
-			else{
-				numPlayers = 1;
 			}
 		}
-		//48-57 correlates to 0-
+		else if(e.getKeyCode()==32){
+			//needNumPlayers = false;
+			screenStatus = "Start";
+		}
+		else{
+			numPlayers = 1;
+		}
+
+	}
 		
 	
-	}
 
 
 	//DO NOT DELETE
