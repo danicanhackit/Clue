@@ -45,5 +45,8 @@ public class Card{
     public void drawCard(Graphics g2d){
         g2d.setColor(col);
         g2d.fillRoundRect(x, y, w, h, 20, 20);
+        g2d.setColor(Color.black);
+        g2d.setFont( new Font("Broadway", Font.PLAIN, 20));
+        g2d.drawString(name, x+25, y+20);
     }
 }
