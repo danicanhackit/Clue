@@ -1,3 +1,5 @@
 Pool
 Bookstore
 Art Studio
+Comp Sci Room
+Dirty Dough

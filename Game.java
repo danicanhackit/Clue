@@ -88,6 +88,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 
 	public void startGameplay(Graphics g2d){
 		drawCards(g2d);
+		drawMurder(g2d);
 	}
 
 	public void drawCards(Graphics g2d){
@@ -114,11 +115,15 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 
 	public void drawMurder(Graphics g2d){
 		ArrayList<Card> currentHand = new ArrayList<Card>();
-		currentHand.add(new Card(x, y, murderInfo.get("Suspect"), Color.red));
-		currentHand.add(new Card(x, y, murderInfo.get("Weapon"), Color.red));
-		currentHand.add(new Card(x, y, murderInfo.get("Room"), Color.red));
-		x+=20;
-		y+=50;
+		int x = cardsToDisplay.get(cardsToDisplay.size()-1).get(0).getX();
+		int y = 10;
+		currentHand.add(new Card(x + 250, y, murderInfo.get("Suspect"), Color.MAGENTA));
+		currentHand.add(new Card(x + 270, y + 50, murderInfo.get("Weapon"), Color.MAGENTA));
+		currentHand.add(new Card(x + 290, y + 100, murderInfo.get("Room"), Color.MAGENTA));
+		for(Card c: currentHand){
+			c.drawCard(g2d);
+		}
+		
 
 	}
 
