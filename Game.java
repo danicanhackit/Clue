@@ -25,6 +25,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	private String screenStatus = "Loading";
 	private int numPlayers = 0;
 	
+	private Button start = new Button(500, 500, "start", Color.RED);
 	public Game() {
 		new Thread(this).start();	
 		this.addKeyListener(this);
@@ -74,7 +75,8 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		
 	
 		if(screenStatus.equals("Loading")){
-			g2d.drawString("Hello!" , x, y);
+			g2d.drawString("How many players?" , x, y);
+			start.drawCard(g2d);
 		} else if(screenStatus.equals("Start")){
 			startGameplay(g2d);
 		}
@@ -115,7 +117,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 
 	public void drawMurder(Graphics g2d){
 		ArrayList<Card> currentHand = new ArrayList<Card>();
-		int x = cardsToDisplay.get(cardsToDisplay.size()-1).get(0).getX();
+		int x = cardsToDisplay.get(cardsToDisplay.size()-1).get(cardsToDisplay.get(cardsToDisplay.size()-1).size()-1).getX();
 		int y = 10;
 		currentHand.add(new Card(x + 250, y, murderInfo.get("Suspect"), Color.MAGENTA));
 		currentHand.add(new Card(x + 270, y + 50, murderInfo.get("Weapon"), Color.MAGENTA));
