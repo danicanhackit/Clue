@@ -21,7 +21,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
     private ArrayList<String> myHand;
 	private ArrayList<ArrayList<String>> allHands;
 	private ArrayList<ArrayList<Card>> cardsToDisplay = new ArrayList<ArrayList<Card>>();
-
+	private ArrayList<Player> players = new ArrayList<Player>();
 	private String screenStatus = "Loading";
 	private int numPlayers = 0;
 	
@@ -76,7 +76,8 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	
 		if(screenStatus.equals("Loading")){
 			g2d.drawString("How many players?" , x, y);
-			start.drawCard(g2d);
+			g2d.drawString("Players: "+numPlayers, 500,400);
+			start.drawButton(g2d);
 		} else if(screenStatus.equals("Start")){
 			startGameplay(g2d);
 		}
@@ -91,12 +92,35 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	public void startGameplay(Graphics g2d){
 		drawCards(g2d);
 		drawMurder(g2d);
+		drawMyHand(g2d);
+		//setPlayerHands();
+
+		g2d.drawLine(700, 0, 700, 1600);
 	}
 
+	public void setPlayerHands(){
+		// this method doesn't work lol
+		for(int i=0; i<numPlayers; i++){
+			players.add(new Player());
+		}
+		for(int i=0; i<players.size(); i++){
+			ArrayList<Card> deck = new ArrayList<Card>();
+			for(int j=0; j<allHands.get(i).size(); j++){
+				deck.add(new Card(x, y, allHands.get(i).get(j), Color.red));
+				x+=20;
+				y+=50;
+			}
+
+			players.get(i).setCards(deck);
+		}
+		for(Player p: players){
+			System.out.println("Player Hand: "+p.getCards());
+		}
+	}
 	public void drawCards(Graphics g2d){
-		x = 10;
+		x = 310;
 		y = 10;
-		for(int i=0; i<allHands.size(); i++){
+		for(int i=1; i<allHands.size(); i++){
 			ArrayList<Card> currentHand = new ArrayList<Card>();
 			for(int j=0; j<allHands.get(i).size(); j++){
 				currentHand.add(new Card(x, y, allHands.get(i).get(j), Color.red));
@@ -110,18 +134,32 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		
 		for(int i=0; i<cardsToDisplay.size(); i++){
 			for(Card c: cardsToDisplay.get(i)){
-				c.drawCard(g2d);
+				c.drawOutlinedCard(g2d);
 			}
+		}
+	}
+
+	public void drawMyHand(Graphics g2d){
+		x = 10;
+		y = 10;
+		ArrayList<Card> currentHand = new ArrayList<Card>();
+		for(int i=0; i<allHands.get(0).size(); i++){
+			currentHand.add(new Card(x, y, allHands.get(0).get(i), Color.YELLOW));
+			y+=50;
+		}
+		for(Card c: currentHand){
+			c.drawOutlinedCard(g2d);
 		}
 	}
 
 	public void drawMurder(Graphics g2d){
 		ArrayList<Card> currentHand = new ArrayList<Card>();
-		int x = cardsToDisplay.get(cardsToDisplay.size()-1).get(cardsToDisplay.get(cardsToDisplay.size()-1).size()-1).getX();
+		int x = cardsToDisplay.get(cardsToDisplay.size()-1).get(0).getX() + cardsToDisplay.get(0).get(0).getWidth();
 		int y = 10;
-		currentHand.add(new Card(x + 250, y, murderInfo.get("Suspect"), Color.MAGENTA));
-		currentHand.add(new Card(x + 270, y + 50, murderInfo.get("Weapon"), Color.MAGENTA));
-		currentHand.add(new Card(x + 290, y + 100, murderInfo.get("Room"), Color.MAGENTA));
+
+		currentHand.add(new Card(x + 220, y, murderInfo.get("Suspect"), Color.MAGENTA));
+		currentHand.add(new Card(x + 240, y + 50, murderInfo.get("Weapon"), Color.MAGENTA));
+		currentHand.add(new Card(x + 260, y + 100, murderInfo.get("Room"), Color.MAGENTA));
 		for(Card c: currentHand){
 			c.drawCard(g2d);
 		}
@@ -305,6 +343,13 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		// TODO Auto-generated method stub
 		x=arg0.getX();
 		y=arg0.getY();
+		if(screenStatus.equals("Loading")){
+			if(start.hover(x, y)){
+				start.setColor(Color.BLUE);
+			} else{
+				start.setColor(Color.RED);
+			}
+		}
 	}
 
 
@@ -336,10 +381,20 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	@Override
 	public void mousePressed(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		
-		System.out.println("you clicked at"+ arg0.getY());
 		x=arg0.getX();
 		y=arg0.getY();
+		System.out.println("you clicked at"+ arg0.getY());
+		if(screenStatus.equals("Loading")){
+			if(start.hover(x, y)){
+				if(numPlayers == 0){
+					numPlayers = 1;
+				}
+				screenStatus = "Start";
+				allHands = shuffleAndDealCards();
+				myHand = allHands.get(0);
+			}
+		}
+
 		
 	}
 

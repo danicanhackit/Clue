@@ -49,4 +49,12 @@ public class Card{
         g2d.setFont( new Font("Broadway", Font.PLAIN, 20));
         g2d.drawString(name, x+40, y+40);
     }
+    public void drawOutlinedCard(Graphics g2d){
+        g2d.setColor(col);
+        g2d.fillRoundRect(x, y, w, h, 20, 20);
+        g2d.setColor(Color.black);
+        g2d.drawRoundRect(x, y, w, h, 20,20);
+        g2d.setFont( new Font("Broadway", Font.PLAIN, 20));
+        g2d.drawString(name, x+40, y+40);
+    }
 }

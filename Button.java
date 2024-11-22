@@ -42,7 +42,10 @@ public class Button{
     public Color getColor(){
         return col;
     }
-    public void drawCard(Graphics g2d){
+    public void setColor(Color c){
+        col = c;
+    }
+    public void drawButton(Graphics g2d){
         g2d.setColor(col);
         g2d.fillRoundRect(x, y, w, h, 20, 20);
         g2d.setColor(Color.black);
