@@ -16,10 +16,15 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	private BufferedImage back; 
 	private int key, x, y; 
 
-    private HashMap <String, ArrayList<String>> cardDeck;
+    // hashmap of strings (card names) by suspect, weapon, and location
+	private HashMap <String, ArrayList<String>> cardDeck;
+	// hashmap of murderer suspect, weapon, and location (the answer)
     private HashMap <String, String> murderInfo;
+	// first arraylist of strings in allHands (index 0)
     private ArrayList<String> myHand;
+	// arraylists of string arraylists made by dividing remaining cards into number of players
 	private ArrayList<ArrayList<String>> allHands;
+	// arraylist of card arraylists that are the card representations of each hand (which is a string arraylist)
 	private ArrayList<ArrayList<Card>> cardsToDisplay = new ArrayList<ArrayList<Card>>();
 	private ArrayList<Player> players = new ArrayList<Player>();
 	private String screenStatus = "Loading";
@@ -120,6 +125,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			}
 		}
 	}*/
+
 
 	public void drawCards(Graphics g2d){
 		x = 250;
