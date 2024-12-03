@@ -5,8 +5,8 @@ public class Player{
     public Player(){
         cards = new ArrayList<Card>();
     }
-    public void setCards(ArrayList<Card> cardz){
-        cards = cardz;
+    public void setCards(ArrayList<Card> _cards){
+        cards = _cards;
     }
     public ArrayList<Card> getCards(){
         return cards;
