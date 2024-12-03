@@ -11,5 +11,8 @@ public class Player{
     public ArrayList<Card> getCards(){
         return cards;
     }
+    public String toString(){
+        return "Player";
+    }
     
 }

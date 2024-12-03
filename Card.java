@@ -42,6 +42,9 @@ public class Card{
     public Color getColor(){
         return col;
     }
+    public String toString(){
+        return name;
+    }
     public void drawCard(Graphics g2d){
         g2d.setColor(col);
         g2d.fillRoundRect(x, y, w, h, 20, 20);
