@@ -16,12 +16,19 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	private BufferedImage back; 
 	private int key, x, y; 
 
-    private HashMap <String, ArrayList<String>> cardDeck;
+    // hashmap of strings (card names) by suspect, weapon, and location
+	private HashMap <String, ArrayList<String>> cardDeck;
+	// hashmap of murderer suspect, weapon, and location (the answer)
     private HashMap <String, String> murderInfo;
+	// first arraylist of strings in allHands (index 0)
     private ArrayList<String> myHand;
+	// arraylists of string arraylists made by dividing remaining cards into number of players
 	private ArrayList<ArrayList<String>> allHands;
+	// arraylist of card arraylists that are the card representations of each hand (which is a string arraylist)
 	private ArrayList<ArrayList<Card>> cardsToDisplay = new ArrayList<ArrayList<Card>>();
 	private ArrayList<Player> players = new ArrayList<Player>();
+
+	private ArrayList<Button> playerButtons = new ArrayList<Button>();
 	private String screenStatus = "Loading";
 	private int numPlayers = 0;
 	
@@ -82,36 +89,42 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			startGameplay(g2d);
 		}
 		
-       	System.out.println("Selected Murder Info: "+murderInfo);
-		System.out.println("my cards: "+myHand);
-		System.out.println("testing shuffle: "+allHands);
+       	//System.out.println("Selected Murder Info: "+murderInfo);
+		//System.out.println("my cards: "+myHand);
+		//System.out.println("testing shuffle: "+allHands);
 		twoDgraph.drawImage(back, null, 0, 0);
 
 	}
 
 	public void startGameplay(Graphics g2d){
-		drawCards(g2d);
+		//drawCards(g2d);
 		drawMurder(g2d);
-		drawMyHand(g2d);
-		//setPlayerHands(g2d);
-
+		//drawMyHand(g2d);
+		drawPlayerHands(g2d);
+		drawButtons(g2d);
 		g2d.drawLine(700, 0, 700, 1600);
 	}
 
-	/*public void setPlayerHands(Graphics g2d){
-		// this method doesn't work lol
+	public void setPlayerHands(){
 		for(int i=0; i<numPlayers; i++){
 			players.add(new Player());
 		}
+		System.out.println(players.toString());
+	}
+
+	public void drawPlayerHands(Graphics g2d){
+		int x = 250;
+		int y = 400;
 		for(int i=0; i<players.size(); i++){
-			ArrayList<Card> deck = new ArrayList<Card>();
+			ArrayList<Card> curHand = new ArrayList<Card>();
 			for(int j=0; j<allHands.get(i).size(); j++){
-				deck.add(new Card(x, y, allHands.get(i).get(j), Color.red));
-				x+=20;
+				curHand.add(new Card(x, y, allHands.get(i).get(j), Color.BLUE));
+				//x+=20;
 				y+=50;
 			}
-
-			players.get(i).setCards(deck);
+			players.get(i).setCards(curHand);
+			x+=250;
+			y=400;
 		}
 		for(Player p: players){
 			System.out.println("Player Hand: "+p.getCards());
@@ -119,56 +132,25 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 				c.drawOutlinedCard(g2d);
 			}
 		}
-	}*/
+		System.out.println(players.get(0).getCards());
+	}
 
-	public void drawCards(Graphics g2d){
-		x = 250;
-		y = 10;
-		for(int i=1; i<allHands.size(); i++){
-			ArrayList<Card> currentHand = new ArrayList<Card>();
-			for(int j=0; j<allHands.get(i).size(); j++){
-				currentHand.add(new Card(x, y, allHands.get(i).get(j), Color.red));
-				//x+=20;
-				y+=50;
-			}
-			cardsToDisplay.add(currentHand);
+	public ArrayList<Button> setPlayerButtons(){
+		int x = 10;
+		int y = 500;
+		ArrayList<Button> temp = new ArrayList<Button>();
+		for(int i=0; i<players.size(); i++){
+			Player p = players.get(i);
+			temp.add(new Button(x,y,"Player "+(i+1), Color.RED));
 			x+=250;
-			y=10;
 		}
-		
-		for(int i=0; i<cardsToDisplay.size(); i++){
-			for(Card c: cardsToDisplay.get(i)){
-				c.drawOutlinedCard(g2d);
-			}
-		}
+		return temp;
 	}
 
-	public void drawMyHand(Graphics g2d){
-		x = 10;
-		y = 10;
-		ArrayList<Card> currentHand = new ArrayList<Card>();
-		for(int i=0; i<allHands.get(0).size(); i++){
-			currentHand.add(new Card(x, y, allHands.get(0).get(i), Color.YELLOW));
-			y+=50;
+	public void drawButtons(Graphics g2d){
+		for(int i=0; i<playerButtons.size(); i++){
+			playerButtons.get(i).drawButton(g2d);
 		}
-		for(Card c: currentHand){
-			c.drawOutlinedCard(g2d);
-		}
-	}
-
-	public void drawMurder(Graphics g2d){
-		ArrayList<Card> currentHand = new ArrayList<Card>();
-		int x = cardsToDisplay.get(cardsToDisplay.size()-1).get(0).getX() + cardsToDisplay.get(0).get(0).getWidth();
-		int y = 10;
-
-		currentHand.add(new Card(x + 220, y, murderInfo.get("Suspect"), Color.MAGENTA));
-		currentHand.add(new Card(x + 240, y + 50, murderInfo.get("Weapon"), Color.MAGENTA));
-		currentHand.add(new Card(x + 260, y + 100, murderInfo.get("Room"), Color.MAGENTA));
-		for(Card c: currentHand){
-			c.drawCard(g2d);
-		}
-		
-
 	}
 
 	public ArrayList<ArrayList<String>> shuffleAndDealCards(){
@@ -274,6 +256,56 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
         return (int)(Math.random()*(max-min)+min)+1;
     }
 
+	// OLD CARD METHODS
+	public void drawCards(Graphics g2d){
+		int x = 250;
+		int y = 10;
+		for(int i=1; i<allHands.size(); i++){
+			ArrayList<Card> currentHand = new ArrayList<Card>();
+			for(int j=0; j<allHands.get(i).size(); j++){
+				currentHand.add(new Card(x, y, allHands.get(i).get(j), Color.red));
+				//x+=20;
+				y+=50;
+			}
+			cardsToDisplay.add(currentHand);
+			x+=250;
+			y=10;
+		}
+		
+		for(int i=0; i<cardsToDisplay.size(); i++){
+			for(Card c: cardsToDisplay.get(i)){
+				c.drawOutlinedCard(g2d);
+			}
+		}
+	}
+
+	public void drawMyHand(Graphics g2d){
+		int x = 10;
+		int y = 10;
+		ArrayList<Card> currentHand = new ArrayList<Card>();
+		for(int i=0; i<allHands.get(0).size(); i++){
+			currentHand.add(new Card(x, y, allHands.get(0).get(i), Color.YELLOW));
+			y+=50;
+		}
+		for(Card c: currentHand){
+			c.drawOutlinedCard(g2d);
+		}
+	}
+
+	public void drawMurder(Graphics g2d){
+		ArrayList<Card> currentHand = new ArrayList<Card>();
+		int x = 10;
+		int y = 10;
+
+		currentHand.add(new Card(x + 220, y, murderInfo.get("Suspect"), Color.MAGENTA));
+		currentHand.add(new Card(x + 240, y + 50, murderInfo.get("Weapon"), Color.MAGENTA));
+		currentHand.add(new Card(x + 260, y + 100, murderInfo.get("Room"), Color.MAGENTA));
+		for(Card c: currentHand){
+			c.drawCard(g2d);
+		}
+		
+
+	}
 	/*public ArrayList<String> shuffleAndDealCards(){
 		ArrayList<String> temp = new ArrayList<String>();
 		temp.addAll(cardDeck.get("Suspect"));
@@ -313,6 +345,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			screenStatus = "Start";
 			allHands = shuffleAndDealCards();
 			myHand = allHands.get(0);
+			playerButtons = setPlayerButtons();
 		}
 		else{
 			numPlayers = 1;
@@ -396,6 +429,8 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 				screenStatus = "Start";
 				allHands = shuffleAndDealCards();
 				myHand = allHands.get(0);
+				setPlayerHands();
+				playerButtons = setPlayerButtons();
 			}
 		}
 
