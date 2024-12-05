@@ -32,7 +32,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	private String screenStatus = "Loading";
 	private int numPlayers = 0;
 	
-	private Button start = new Button(500, 500, "start", Color.RED);
+	private Button start = new Button(500, 100, "start", Color.RED);
 	public Game() {
 		new Thread(this).start();	
 		this.addKeyListener(this);
@@ -100,8 +100,9 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		//drawCards(g2d);
 		drawMurder(g2d);
 		//drawMyHand(g2d);
-		drawPlayerHands(g2d);
+		//drawPlayerHands(g2d);
 		drawButtons(g2d);
+		checkForPlayerClick(g2d);
 		g2d.drawLine(700, 0, 700, 1600);
 	}
 
@@ -109,10 +110,6 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		for(int i=0; i<numPlayers; i++){
 			players.add(new Player());
 		}
-		System.out.println(players.toString());
-	}
-
-	public void drawPlayerHands(Graphics g2d){
 		int x = 250;
 		int y = 400;
 		for(int i=0; i<players.size(); i++){
@@ -126,6 +123,21 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			x+=250;
 			y=400;
 		}
+		System.out.println(players.toString());
+	}
+
+	public void checkForPlayerClick(Graphics g2d){
+		for(Button b: playerButtons){
+			if(b.getSeePlayerHand()){
+				int player = b.getPlayerNum()-1;
+				for(int i=0; i<players.get(player).getCards().size(); i++){
+					players.get(player).getCards().get(i).drawOutlinedCard(g2d);
+				}
+			}
+		}
+	}
+
+	public void drawPlayerHands(Graphics g2d){
 		for(Player p: players){
 			System.out.println("Player Hand: "+p.getCards());
 			for(Card c: p.getCards()){
@@ -141,7 +153,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		ArrayList<Button> temp = new ArrayList<Button>();
 		for(int i=0; i<players.size(); i++){
 			Player p = players.get(i);
-			temp.add(new Button(x,y,"Player "+(i+1), Color.RED));
+			temp.add(new Button(x,y,"Player "+(i+1), Color.RED, i+1));
 			x+=250;
 		}
 		return temp;
@@ -387,6 +399,15 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 				start.setColor(Color.RED);
 			}
 		}
+		if(screenStatus.equals("Start")){
+			for(Button b: playerButtons){
+				if(b.hover(x, y)){
+					b.setColor(Color.GREEN);
+				} else{
+					b.setColor(Color.RED);
+				}
+			}
+		}
 	}
 
 
@@ -431,6 +452,13 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 				myHand = allHands.get(0);
 				setPlayerHands();
 				playerButtons = setPlayerButtons();
+			}
+		}
+		if(screenStatus.equals("Start")){
+			for(Button b: playerButtons){
+				if(b.hover(x, y)){
+					b.setSeePlayerHand(true);
+				}
 			}
 		}
 

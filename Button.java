@@ -5,6 +5,8 @@ public class Button{
     private int x, y, w, h;
     private String name;
     private Color col;
+    private int player;
+    private boolean seePlayerHand;
     
     public Button(){
         x = 0;
@@ -13,6 +15,7 @@ public class Button{
         h = 0;
         name = "";
         col = Color.white;
+        seePlayerHand = false;
     }
 
     public Button(int x, int y, String name, Color c){
@@ -22,6 +25,18 @@ public class Button{
         w = 200;
         h = 75;
         col = c;
+        player = 0;
+        seePlayerHand = false;
+    }
+    public Button(int x, int y, String name, Color c, int player){
+        this.x = x;
+        this.y = y;
+        this.name = name;
+        w = 200;
+        h = 75;
+        col = c;
+        this.player = player;
+        seePlayerHand = false;
     }
 
     public int getX(){
@@ -44,6 +59,15 @@ public class Button{
     }
     public void setColor(Color c){
         col = c;
+    }
+    public int getPlayerNum(){
+        return player;
+    }
+    public void setSeePlayerHand(boolean clicked){
+        seePlayerHand = clicked;
+    }
+    public boolean getSeePlayerHand(){
+        return seePlayerHand;
     }
     public void drawButton(Graphics g2d){
         g2d.setColor(col);
