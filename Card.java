@@ -5,6 +5,7 @@ public class Card{
     private int x, y, w, h;
     private String name;
     private Color col;
+    private boolean revealed;
     
     public Card(){
         x = 0;
@@ -13,6 +14,7 @@ public class Card{
         h = 0;
         name = "";
         col = Color.white;
+        revealed = false;
     }
 
     public Card(int x, int y, String name, Color c){
@@ -22,6 +24,7 @@ public class Card{
         w = 200;
         h = 75;
         col = c;
+        revealed = false;
     }
 
     public int getX(){
@@ -64,6 +67,7 @@ public class Card{
         g2d.setColor(col);
         g2d.fillRoundRect(x, y, w, h, 20, 20);
         g2d.setColor(Color.black);
+        g2d.drawRoundRect(x, y, w, h, 20,20);
         //g2d.setFont( new Font("Broadway", Font.PLAIN, 20));
         //g2d.drawString(name, x+40, y+40);
     }
@@ -78,5 +82,14 @@ public class Card{
             return true;
         }
         return false;
+    }
+    public void setColor(Color c){
+        col = c;
+    }
+    public void setRevealed(boolean revealed){
+        this.revealed = revealed;
+    }
+    public boolean isRevealed(){
+        return revealed;
     }
 }

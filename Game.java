@@ -87,6 +87,8 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			start.drawButton(g2d);
 		} else if(screenStatus.equals("Start")){
 			startGameplay(g2d);
+		} else if(screenStatus.equals("See Player Cards")){
+			seePlayerCardsScreen(g2d);
 		}
 		
        	//System.out.println("Selected Murder Info: "+murderInfo);
@@ -99,52 +101,53 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	public void startGameplay(Graphics g2d){
 		//drawCards(g2d);
 		drawMurder(g2d);
-		//drawMyHand(g2d);
+		drawMyHand(g2d);
 		//drawPlayerHands(g2d);
 		drawButtons(g2d);
-		checkForPlayerClick(g2d);
+		displaySelectedPlayerHand(g2d);
 		g2d.drawLine(700, 0, 700, 1600);
+	}
+	public void seePlayerCardsScreen(Graphics g2d){
+		displaySelectedPlayerHand(g2d);
 	}
 
 	public void setPlayerHands(){
-		for(int i=0; i<numPlayers; i++){
+		for(int i=0; i<numPlayers-1; i++){
 			players.add(new Player());
 		}
-		int x = 250;
-		int y = 400;
-		for(int i=0; i<players.size(); i++){
+		int x = 10;
+		int y = 600;
+		for(int i=1; i<players.size()+1; i++){
 			ArrayList<Card> curHand = new ArrayList<Card>();
 			for(int j=0; j<allHands.get(i).size(); j++){
 				curHand.add(new Card(x, y, allHands.get(i).get(j), Color.BLUE));
 				//x+=20;
 				y+=50;
 			}
-			players.get(i).setCards(curHand);
+			players.get(i-1).setCards(curHand);
 			x+=250;
-			y=400;
+			y = 600;
 		}
 		System.out.println(players.toString());
 	}
 
-	public void checkForPlayerClick(Graphics g2d){
+	public void displaySelectedPlayerHand(Graphics g2d){
 		for(Button b: playerButtons){
 			if(b.getSeePlayerHand()){
-				int player = b.getPlayerNum()-1;
+				int player = b.getPlayerNum()-2;
+				g2d.setFont( new Font("Broadway", Font.PLAIN, 20));
+				g2d.drawString("Player "+b.getPlayerNum(), b.getX(), b.getY()-20);
 				for(int i=0; i<players.get(player).getCards().size(); i++){
-					players.get(player).getCards().get(i).drawOutlinedCard(g2d);
+					players.get(player).getCards().get(i).drawCardWOName(g2d);
+				}
+
+				for(Card c: players.get(b.getPlayerNum()-2).getCards()){
+					if(c.isRevealed()){
+						c.revealAnswer(g2d);
+					}
 				}
 			}
 		}
-	}
-
-	public void drawPlayerHands(Graphics g2d){
-		for(Player p: players){
-			System.out.println("Player Hand: "+p.getCards());
-			for(Card c: p.getCards()){
-				c.drawOutlinedCard(g2d);
-			}
-		}
-		System.out.println(players.get(0).getCards());
 	}
 
 	public ArrayList<Button> setPlayerButtons(){
@@ -152,8 +155,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		int y = 500;
 		ArrayList<Button> temp = new ArrayList<Button>();
 		for(int i=0; i<players.size(); i++){
-			Player p = players.get(i);
-			temp.add(new Button(x,y,"Player "+(i+1), Color.RED, i+1));
+			temp.add(new Button(x,y,"Player "+(i+2), Color.RED, i+2));
 			x+=250;
 		}
 		return temp;
@@ -194,6 +196,32 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			}
 		}
 		return playerHands;
+	}
+
+	public void drawMyHand(Graphics g2d){
+		int x = 10;
+		int y = 30;
+		ArrayList<Card> currentHand = new ArrayList<Card>();
+		for(int i=0; i<myHand.size(); i++){
+			currentHand.add(new Card(x, y, myHand.get(i), Color.YELLOW));
+			y+=50;
+		}
+		for(Card c: currentHand){
+			c.drawOutlinedCard(g2d);
+		}
+	}
+
+	public void drawMurder(Graphics g2d){
+		ArrayList<Card> currentHand = new ArrayList<Card>();
+		int x = 10;
+		int y = 30;
+
+		currentHand.add(new Card(x + 220, y, murderInfo.get("Suspect"), Color.MAGENTA));
+		currentHand.add(new Card(x + 240, y + 50, murderInfo.get("Weapon"), Color.MAGENTA));
+		currentHand.add(new Card(x + 260, y + 100, murderInfo.get("Room"), Color.MAGENTA));
+		for(Card c: currentHand){
+			c.drawCard(g2d);
+		}
 	}
 
 
@@ -291,32 +319,14 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		}
 	}
 
-	public void drawMyHand(Graphics g2d){
-		int x = 10;
-		int y = 10;
-		ArrayList<Card> currentHand = new ArrayList<Card>();
-		for(int i=0; i<allHands.get(0).size(); i++){
-			currentHand.add(new Card(x, y, allHands.get(0).get(i), Color.YELLOW));
-			y+=50;
+	public void drawPlayerHands(Graphics g2d){
+		for(Player p: players){
+			System.out.println("Player Hand: "+p.getCards());
+			for(Card c: p.getCards()){
+				c.drawOutlinedCard(g2d);
+			}
 		}
-		for(Card c: currentHand){
-			c.drawOutlinedCard(g2d);
-		}
-	}
-
-	public void drawMurder(Graphics g2d){
-		ArrayList<Card> currentHand = new ArrayList<Card>();
-		int x = 10;
-		int y = 10;
-
-		currentHand.add(new Card(x + 220, y, murderInfo.get("Suspect"), Color.MAGENTA));
-		currentHand.add(new Card(x + 240, y + 50, murderInfo.get("Weapon"), Color.MAGENTA));
-		currentHand.add(new Card(x + 260, y + 100, murderInfo.get("Room"), Color.MAGENTA));
-		for(Card c: currentHand){
-			c.drawCard(g2d);
-		}
-		
-
+		System.out.println(players.get(0).getCards());
 	}
 	/*public ArrayList<String> shuffleAndDealCards(){
 		ArrayList<String> temp = new ArrayList<String>();
@@ -363,6 +373,15 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			numPlayers = 1;
 		}
 
+		if(screenStatus.equals("See Player Cards")){
+			if(e.getKeyChar()=='h'){
+				for(Button b: playerButtons){
+					b.setSeePlayerHand(!b.getSeePlayerHand());
+				}
+				screenStatus.equals("Start");
+			}
+		}
+
 	}
 		
 	
@@ -405,6 +424,15 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 					b.setColor(Color.GREEN);
 				} else{
 					b.setColor(Color.RED);
+				}
+				if(b.getSeePlayerHand()){
+					for(Card c: players.get(b.getPlayerNum()-2).getCards()){
+						if(c.hover(x,y)){
+							c.setColor(Color.GREEN);
+						} else{
+							c.setColor(Color.BLUE);
+						}
+					}
 				}
 			}
 		}
@@ -457,7 +485,16 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		if(screenStatus.equals("Start")){
 			for(Button b: playerButtons){
 				if(b.hover(x, y)){
-					b.setSeePlayerHand(true);
+					b.setSeePlayerHand(!b.getSeePlayerHand());
+					//screenStatus = "See Player Cards";
+				}
+				if(b.getSeePlayerHand()){
+					for(Card c: players.get(b.getPlayerNum()-2).getCards()){
+						if(c.hover(x,y)){
+							c.setRevealed(true);
+							break;
+						}
+					}
 				}
 			}
 		}
