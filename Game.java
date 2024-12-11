@@ -33,6 +33,8 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	private int numPlayers = 0;
 	
 	private Button start = new Button(500, 100, "start", Color.RED);
+	private Button deleteCard = new Button(0,0,"confirm delete", Color.RED);
+	private Button notepad = new Button(230, 30, 200, 200, new ImageIcon("Button Images\\notepad.png"));
 	public Game() {
 		new Thread(this).start();	
 		this.addKeyListener(this);
@@ -87,7 +89,12 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			start.drawButton(g2d);
 		} else if(screenStatus.equals("Start")){
 			startGameplay(g2d);
-		} else if(screenStatus.equals("See Player Cards")){
+		} else if(screenStatus.equals("Notepad")){
+			notepadScreen(g2d);
+		}
+		
+		//also not using this rn
+		else if(screenStatus.equals("See Player Cards")){
 			seePlayerCardsScreen(g2d);
 		}
 		
@@ -98,8 +105,12 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 
 	}
 
+	public void notepadScreen(Graphics g2d){
+		g2d.drawString("hello", 500, 500);
+	}
 	public void startGameplay(Graphics g2d){
 		//drawCards(g2d);
+		notepad.drawImageButton(g2d);
 		drawMurder(g2d);
 		drawMyHand(g2d);
 		//drawPlayerHands(g2d);
@@ -142,8 +153,11 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 				}
 
 				for(Card c: players.get(b.getPlayerNum()-2).getCards()){
-					if(c.isRevealed()){
+					if(c.getRevealed()){
 						c.revealAnswer(g2d);
+						deleteCard.setX(c.getX()+250);
+						deleteCard.setY(c.getY());
+						deleteCard.drawButton(g2d);
 					}
 				}
 			}
@@ -213,7 +227,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 
 	public void drawMurder(Graphics g2d){
 		ArrayList<Card> currentHand = new ArrayList<Card>();
-		int x = 10;
+		int x = 230;
 		int y = 30;
 
 		currentHand.add(new Card(x + 220, y, murderInfo.get("Suspect"), Color.MAGENTA));
@@ -373,6 +387,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			numPlayers = 1;
 		}
 
+		// not using this right now
 		if(screenStatus.equals("See Player Cards")){
 			if(e.getKeyChar()=='h'){
 				for(Button b: playerButtons){
@@ -433,7 +448,17 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 							c.setColor(Color.BLUE);
 						}
 					}
+					if(deleteCard.hover(x,y)){
+						deleteCard.setColor(Color.PINK);
+					} else{
+						deleteCard.setColor(Color.RED);
+					}
 				}
+			}
+			if(notepad.hover(x,y)){
+				notepad.setImage(new ImageIcon("Button Images\\notepad hover.png"));
+			} else{
+				notepad.setImage(new ImageIcon("Button Images\\notepad.png"));
 			}
 		}
 	}
@@ -491,11 +516,20 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 				if(b.getSeePlayerHand()){
 					for(Card c: players.get(b.getPlayerNum()-2).getCards()){
 						if(c.hover(x,y)){
-							c.setRevealed(true);
+							c.setRevealed(!c.getRevealed());
 							break;
+						}
+						if(c.getRevealed()){
+							if(deleteCard.hover(x,y)){
+								players.get(b.getPlayerNum()-2).getCards().remove(c);
+								b.setSeePlayerHand(false);
+							}
 						}
 					}
 				}
+			}
+			if(notepad.hover(x,y)){
+				screenStatus = "Notepad";
 			}
 		}
 

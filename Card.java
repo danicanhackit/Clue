@@ -89,7 +89,7 @@ public class Card{
     public void setRevealed(boolean revealed){
         this.revealed = revealed;
     }
-    public boolean isRevealed(){
+    public boolean getRevealed(){
         return revealed;
     }
 }
