@@ -32,9 +32,11 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	private String screenStatus = "Loading";
 	private int numPlayers = 0;
 	
+	private boolean openEnvelope = false;
 	private Button start = new Button(500, 100, "start", Color.RED);
 	private Button deleteCard = new Button(0,0,"confirm delete", Color.RED);
 	private Button notepad = new Button(230, 30, 200, 200, new ImageIcon("Button Images\\notepad.png"));
+	private Button envelope = new Button();
 	public Game() {
 		new Thread(this).start();	
 		this.addKeyListener(this);
@@ -91,6 +93,8 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			startGameplay(g2d);
 		} else if(screenStatus.equals("Notepad")){
 			notepadScreen(g2d);
+		} else if(screenStatus.equals("Envelope Results")){
+			drawMurder(g2d);
 		}
 		
 		//also not using this rn
@@ -106,12 +110,35 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	}
 
 	public void notepadScreen(Graphics g2d){
-		g2d.drawString("hello", 500, 500);
+		g2d.setFont(new Font("Broadway", Font.PLAIN, 20));
+		int x = 100;
+		int y = 50;
+		g2d.drawString("Suspects", x, y);
+		for(int i=0; i<setSuspects().size(); i++){
+			y+=20;
+			g2d.drawString(setSuspects().get(i), x, y);
+		}
+		x+=200;
+		y = 50;
+		g2d.drawString("Rooms", x, y);
+		for(int i=0; i<setRooms().size(); i++){
+			y+=20;
+			g2d.drawString(setRooms().get(i), x, y);
+		}
+		x+=200;
+		y = 50;
+		g2d.drawString("Weapons", x, y);
+		for(int i=0; i<setWeapons().size(); i++){
+			y+=20;
+			g2d.drawString(setWeapons().get(i), x, y);
+		}
 	}
+
 	public void startGameplay(Graphics g2d){
 		//drawCards(g2d);
 		notepad.drawImageButton(g2d);
-		drawMurder(g2d);
+		envelope = new Button(playerButtons.get(0).getX(), playerButtons.get(0).getY()-170-20, 170,100, new ImageIcon("Button Images\\envelope.png"));
+		envelope.drawImageButton(g2d);
 		drawMyHand(g2d);
 		//drawPlayerHands(g2d);
 		drawButtons(g2d);
@@ -460,6 +487,13 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			} else{
 				notepad.setImage(new ImageIcon("Button Images\\notepad.png"));
 			}
+			/*if(envelope.hover(x,y)){
+				envelope.setImage(new ImageIcon("Button Images\\envelope hover.png"));
+				openEnvelope = true;
+			} else{
+				envelope.setImage(new ImageIcon("Button Images\\envelope.png"));
+				openEnvelope = false;
+			}*/
 		}
 	}
 
@@ -530,6 +564,9 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			}
 			if(notepad.hover(x,y)){
 				screenStatus = "Notepad";
+			}
+			if(envelope.hover(x,y)){
+				screenStatus = "Envelope Results";
 			}
 		}
 

@@ -77,6 +77,9 @@ public class Button{
     public int getHeight(){
         return h;
     }
+    public void setHeight(int height){
+        h = height;
+    }
     public String getName(){
         return name;
     }
