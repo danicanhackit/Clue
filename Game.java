@@ -37,6 +37,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	private Button deleteCard = new Button(0,0,"confirm delete", Color.RED);
 	private Button notepad = new Button(230, 30, 200, 200, new ImageIcon("Button Images\\notepad.png"));
 	private Button envelope = new Button();
+	private Button home = new Button(800,400, "home", Color.RED);
 	public Game() {
 		new Thread(this).start();	
 		this.addKeyListener(this);
@@ -95,6 +96,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			notepadScreen(g2d);
 		} else if(screenStatus.equals("Envelope Results")){
 			drawMurder(g2d);
+			home.drawButton(g2d);
 		}
 		
 		//also not using this rn
@@ -110,6 +112,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	}
 
 	public void notepadScreen(Graphics g2d){
+		home.drawButton(g2d);
 		g2d.setFont(new Font("Broadway", Font.PLAIN, 20));
 		int x = 100;
 		int y = 50;
@@ -495,6 +498,13 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 				openEnvelope = false;
 			}*/
 		}
+		if(screenStatus.equals("Notepad")||screenStatus.equals("Envelope Results")){
+			if(home.hover(x,y)){
+				home.setColor(Color.BLUE);
+			} else{
+				home.setColor(Color.RED);
+			}
+		}
 	}
 
 
@@ -570,7 +580,11 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			}
 		}
 
-		
+		if(screenStatus.equals("Notepad")||screenStatus.equals("Envelope Results")){
+			if(home.hover(x,y)){
+				screenStatus = "Start";
+			} 
+		}
 	}
 
 
