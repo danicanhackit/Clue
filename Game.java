@@ -28,16 +28,26 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	private ArrayList<ArrayList<Card>> cardsToDisplay = new ArrayList<ArrayList<Card>>();
 	private ArrayList<Player> players = new ArrayList<Player>();
 
+
+	// for notepad
+	private ArrayList<Card> suspects = new ArrayList<Card>();
+	private ArrayList<Card> rooms =  new ArrayList<Card>();;
+	private ArrayList<Card> weapons =  new ArrayList<Card>();;
+	private ArrayList<String> deletedPlayerCards = new ArrayList<String>();
+
 	private ArrayList<Button> playerButtons = new ArrayList<Button>();
 	private String screenStatus = "Loading";
 	private int numPlayers = 0;
 	
+	// buttons
 	private boolean openEnvelope = false;
-	private Button start = new Button(500, 100, "start", Color.RED);
-	private Button deleteCard = new Button(0,0,"confirm delete", Color.RED);
+	private Button start = new Button(700, 700, 400, 150, new ImageIcon("Button Images\\startbutton.png"));
+	private Button deleteCard = new Button(0,0,"Confirm Delete", Color.RED);
 	private Button notepad = new Button(230, 30, 200, 200, new ImageIcon("Button Images\\notepad.png"));
 	private Button envelope = new Button();
-	private Button home = new Button(800,400, "home", Color.RED);
+	private Button home = new Button(1000,400, "Home", Color.RED);
+	private ImageIcon background = new ImageIcon("Other Images\\background.png");
+	
 	public Game() {
 		new Thread(this).start();	
 		this.addKeyListener(this);
@@ -49,6 +59,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
         murderInfo = selectMurderInfo();
         cardDeck = setCardDeck();
 		removeMurderFromCardDeck();
+		setNotepad();
 	}
 
 	
@@ -87,71 +98,145 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		
 	
 		if(screenStatus.equals("Loading")){
-			g2d.drawString("How many players?" , x, y);
-			g2d.drawString("Players: "+numPlayers, 500,400);
-			start.drawButton(g2d);
+			startScreen(g2d);
 		} else if(screenStatus.equals("Start")){
 			startGameplay(g2d);
 		} else if(screenStatus.equals("Notepad")){
 			notepadScreen(g2d);
 		} else if(screenStatus.equals("Envelope Results")){
+			drawBackground(g2d, background);
 			drawMurder(g2d);
 			home.drawButton(g2d);
 		}
 		
-		//also not using this rn
-		else if(screenStatus.equals("See Player Cards")){
-			seePlayerCardsScreen(g2d);
-		}
-		
-       	//System.out.println("Selected Murder Info: "+murderInfo);
-		//System.out.println("my cards: "+myHand);
-		//System.out.println("testing shuffle: "+allHands);
+		System.out.println("deleted cards: "+deletedPlayerCards);;
 		twoDgraph.drawImage(back, null, 0, 0);
 
 	}
 
-	public void notepadScreen(Graphics g2d){
-		home.drawButton(g2d);
-		g2d.setFont(new Font("Broadway", Font.PLAIN, 20));
-		int x = 100;
-		int y = 50;
-		g2d.drawString("Suspects", x, y);
-		for(int i=0; i<setSuspects().size(); i++){
-			y+=20;
-			g2d.drawString(setSuspects().get(i), x, y);
-		}
-		x+=200;
-		y = 50;
-		g2d.drawString("Rooms", x, y);
-		for(int i=0; i<setRooms().size(); i++){
-			y+=20;
-			g2d.drawString(setRooms().get(i), x, y);
-		}
-		x+=200;
-		y = 50;
-		g2d.drawString("Weapons", x, y);
-		for(int i=0; i<setWeapons().size(); i++){
-			y+=20;
-			g2d.drawString(setWeapons().get(i), x, y);
-		}
+	public void drawBackground(Graphics g2d, ImageIcon i){
+		g2d.drawImage(i.getImage(), 0, 0, getWidth(), getHeight(), this);
 	}
-
+	// SCREENS
 	public void startGameplay(Graphics g2d){
-		//drawCards(g2d);
+		drawBackground(g2d, background);
 		notepad.drawImageButton(g2d);
 		envelope = new Button(playerButtons.get(0).getX(), playerButtons.get(0).getY()-170-20, 170,100, new ImageIcon("Button Images\\envelope.png"));
 		envelope.drawImageButton(g2d);
 		drawMyHand(g2d);
-		//drawPlayerHands(g2d);
 		drawButtons(g2d);
 		displaySelectedPlayerHand(g2d);
-		g2d.drawLine(700, 0, 700, 1600);
-	}
-	public void seePlayerCardsScreen(Graphics g2d){
-		displaySelectedPlayerHand(g2d);
+		checkMyHand();
+		//g2d.drawLine(700, 0, 700, 1600);
 	}
 
+	public void notepadScreen(Graphics g2d){
+		drawBackground(g2d, background);
+		home.drawButton(g2d);
+		checkDeletedPlayerCards();
+		displayNotepadOptions(g2d);
+		
+	}
+
+	public void startScreen(Graphics g2d){
+		g2d.drawImage(new ImageIcon("Other Images\\startscreen.png").getImage(), 0, 0, getWidth(), getHeight(), this);
+		g2d.drawString("How many players?" , x, y);
+		g2d.drawString("Players: "+numPlayers, 500,400);
+		start.drawImageButton(g2d);
+	}
+
+	// NOTEPAD METHODS
+	public void checkMyHand(){
+		for(String s: myHand){
+			for(Card c: suspects){
+				if(c.getName().equals(s)){
+					c.getCheckbox().setChecked(true);
+				}
+			}
+			for(Card c: rooms){
+				if(c.getName().equals(s)){
+					c.getCheckbox().setChecked(true);
+				}
+			}
+			for(Card c: weapons){
+				if(c.getName().equals(s)){
+					c.getCheckbox().setChecked(true);
+				}
+			}
+		}
+	}
+
+	public void checkDeletedPlayerCards(){
+		for(String s: deletedPlayerCards){
+			for(Card c: suspects){
+				if(c.getName().equals(s)){
+					c.getCheckbox().setChecked(true);
+				}
+			}
+			for(Card c: rooms){
+				if(c.getName().equals(s)){
+					c.getCheckbox().setChecked(true);
+				}
+			}
+			for(Card c: weapons){
+				if(c.getName().equals(s)){
+					c.getCheckbox().setChecked(true);
+				}
+			}
+		}
+	}
+
+	public void setNotepad(){
+		int x = 100;
+		int y = 20;
+		for(String s: setSuspects()){
+			y+=80;
+			suspects.add(new Card(x,y,s,Color.RED));
+		}
+		x+=300;
+		y = 20;
+		for(String s: setRooms()){
+			y+=80;
+			rooms.add(new Card(x,y,s,Color.RED));
+		}
+		x+=300;
+		y = 20;
+		for(String s: setWeapons()){
+			y+=80;
+			weapons.add(new Card(x,y,s,Color.RED));
+		}
+
+	}
+
+	public void displayNotepadOptions(Graphics g2d){
+		int x = 100;
+		int y = 20;
+		g2d.drawString("Suspects", x, y);
+		x+=300;
+		for(Card c: suspects){
+			c.drawOutlinedCard(g2d);
+			c.getCheckbox().drawImageButton(g2d);
+			c.getCheckbox().checkForChecked();
+			c.changeIfChecked();
+		}
+		g2d.drawString("Rooms", x, y);
+		for(Card c: rooms){
+			c.drawOutlinedCard(g2d);
+			c.getCheckbox().drawImageButton(g2d);
+			c.getCheckbox().checkForChecked();
+			c.changeIfChecked();
+		}
+		x+=300;
+		g2d.drawString("Weapons", x, y);
+		for(Card c: weapons){
+			c.drawOutlinedCard(g2d);
+			c.getCheckbox().drawImageButton(g2d);
+			c.getCheckbox().checkForChecked();
+			c.changeIfChecked();
+		}
+	}
+
+	// PLAYER BUTTONS AND HANDS
 	public void setPlayerHands(){
 		for(int i=0; i<numPlayers-1; i++){
 			players.add(new Player());
@@ -193,7 +278,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			}
 		}
 	}
-
+	
 	public ArrayList<Button> setPlayerButtons(){
 		int x = 10;
 		int y = 500;
@@ -211,6 +296,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		}
 	}
 
+	// DISTRIBUTING CARDS
 	public ArrayList<ArrayList<String>> shuffleAndDealCards(){
 		ArrayList<String> deck = new ArrayList<String>();
 		deck.addAll(cardDeck.get("Suspect"));
@@ -242,6 +328,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		return playerHands;
 	}
 
+	// DRAW METHODS
 	public void drawMyHand(Graphics g2d){
 		int x = 10;
 		int y = 30;
@@ -340,52 +427,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
         return (int)(Math.random()*(max-min)+min)+1;
     }
 
-	// OLD CARD METHODS
-	public void drawCards(Graphics g2d){
-		int x = 250;
-		int y = 10;
-		for(int i=1; i<allHands.size(); i++){
-			ArrayList<Card> currentHand = new ArrayList<Card>();
-			for(int j=0; j<allHands.get(i).size(); j++){
-				currentHand.add(new Card(x, y, allHands.get(i).get(j), Color.red));
-				//x+=20;
-				y+=50;
-			}
-			cardsToDisplay.add(currentHand);
-			x+=250;
-			y=10;
-		}
-		
-		for(int i=0; i<cardsToDisplay.size(); i++){
-			for(Card c: cardsToDisplay.get(i)){
-				c.drawOutlinedCard(g2d);
-			}
-		}
-	}
 
-	public void drawPlayerHands(Graphics g2d){
-		for(Player p: players){
-			System.out.println("Player Hand: "+p.getCards());
-			for(Card c: p.getCards()){
-				c.drawOutlinedCard(g2d);
-			}
-		}
-		System.out.println(players.get(0).getCards());
-	}
-	/*public ArrayList<String> shuffleAndDealCards(){
-		ArrayList<String> temp = new ArrayList<String>();
-		temp.addAll(cardDeck.get("Suspect"));
-		temp.addAll(cardDeck.get("Weapon"));
-		temp.addAll(cardDeck.get("Room"));
-		Collections.shuffle(temp);
-		System.out.println("Card deck size: " + temp.size());
-		System.out.println("Num players: "+ numPlayers);
-		ArrayList<String> mycards = new ArrayList<String>();
-		for(int i=0; i<(int)(temp.size()/numPlayers); i++){
-			mycards.add(temp.get(i));
-		}
-		return mycards;
-	}*/
 
 	//DO NOT DELETE
 	@Override
@@ -458,9 +500,9 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		y=arg0.getY();
 		if(screenStatus.equals("Loading")){
 			if(start.hover(x, y)){
-				start.setColor(Color.BLUE);
+				start.setImage(new ImageIcon("Button Images\\starthover.png"));
 			} else{
-				start.setColor(Color.RED);
+				start.setImage(new ImageIcon("Button Images\\startbutton.png"));
 			}
 		}
 		if(screenStatus.equals("Start")){
@@ -542,7 +584,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		if(screenStatus.equals("Loading")){
 			if(start.hover(x, y)){
 				if(numPlayers == 0){
-					numPlayers = 1;
+					numPlayers = 2;
 				}
 				screenStatus = "Start";
 				allHands = shuffleAndDealCards();
@@ -565,6 +607,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 						}
 						if(c.getRevealed()){
 							if(deleteCard.hover(x,y)){
+								deletedPlayerCards.add(c.getName());
 								players.get(b.getPlayerNum()-2).getCards().remove(c);
 								b.setSeePlayerHand(false);
 							}

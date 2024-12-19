@@ -6,6 +6,7 @@ public class Card{
     private String name;
     private Color col;
     private boolean revealed;
+    private Checkbox checkbox;
     
     public Card(){
         x = 0;
@@ -15,6 +16,7 @@ public class Card{
         name = "";
         col = Color.white;
         revealed = false;
+        checkbox = null;
     }
 
     public Card(int x, int y, String name, Color c){
@@ -25,8 +27,17 @@ public class Card{
         h = 75;
         col = c;
         revealed = false;
+        checkbox = new Checkbox(x-75, y+10);
     }
 
+    public Checkbox getCheckbox(){
+        return checkbox;
+    }
+    public void changeIfChecked(){
+        if(checkbox.isChecked()){
+            setColor(Color.CYAN);
+        }
+    }
     public int getX(){
         return x;
     }

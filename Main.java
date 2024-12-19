@@ -4,10 +4,10 @@ import java.awt.event.*;
 
 public class Main extends JFrame{
 	private static final int WIDTH =1800;
-	private static final int HEIGHT=1600;
+	private static final int HEIGHT=1100;
 	
 	public Main () {
-		super("Clue");
+		super("Clue: Dani");
 		setSize(WIDTH, HEIGHT);
 		Game play = new Game();
 		((Component) play).setFocusable(true);
