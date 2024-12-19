@@ -121,7 +121,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	public void startGameplay(Graphics g2d){
 		drawBackground(g2d, background);
 		notepad.drawImageButton(g2d);
-		envelope = new Button(playerButtons.get(0).getX(), playerButtons.get(0).getY()-170-20, 170,100, new ImageIcon("Button Images\\envelope.png"));
+		envelope = new Button(notepad.getX()+15, notepad.getY()+notepad.getHeight()+25, 170,100, new ImageIcon("Button Images\\envelope.png"));
 		envelope.drawImageButton(g2d);
 		drawMyHand(g2d);
 		drawButtons(g2d);
@@ -139,9 +139,10 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	}
 
 	public void startScreen(Graphics g2d){
+		g2d.setFont( new Font("Broadway", Font.PLAIN, 40));
 		g2d.drawImage(new ImageIcon("Other Images\\startscreen.png").getImage(), 0, 0, getWidth(), getHeight(), this);
-		g2d.drawString("How many players?" , x, y);
-		g2d.drawString("Players: "+numPlayers, 500,400);
+		g2d.drawString("Press key 1-6 to select number of players" , start.getX()-200, 200);
+		g2d.drawString("Players: "+numPlayers, start.getX(),300);
 		start.drawImageButton(g2d);
 	}
 
@@ -241,8 +242,8 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 		for(int i=0; i<numPlayers-1; i++){
 			players.add(new Player());
 		}
-		int x = 10;
-		int y = 600;
+		int x = notepad.getX()+notepad.getWidth()+30;
+		int y = 125;
 		for(int i=1; i<players.size()+1; i++){
 			ArrayList<Card> curHand = new ArrayList<Card>();
 			for(int j=0; j<allHands.get(i).size(); j++){
@@ -252,7 +253,7 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			}
 			players.get(i-1).setCards(curHand);
 			x+=250;
-			y = 600;
+			y = 125;
 		}
 		System.out.println(players.toString());
 	}
@@ -262,16 +263,17 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 			if(b.getSeePlayerHand()){
 				int player = b.getPlayerNum()-2;
 				g2d.setFont( new Font("Broadway", Font.PLAIN, 20));
-				g2d.drawString("Player "+b.getPlayerNum(), b.getX(), b.getY()-20);
+				//g2d.drawString("Player "+b.getPlayerNum(), b.getX(), b.getY()-20);
 				for(int i=0; i<players.get(player).getCards().size(); i++){
 					players.get(player).getCards().get(i).drawCardWOName(g2d);
 				}
 
-				for(Card c: players.get(b.getPlayerNum()-2).getCards()){
+				ArrayList<Card> temp = players.get(b.getPlayerNum()-2).getCards();
+				for(Card c: temp){
 					if(c.getRevealed()){
 						c.revealAnswer(g2d);
-						deleteCard.setX(c.getX()+250);
-						deleteCard.setY(c.getY());
+						deleteCard.setX(c.getX());
+						deleteCard.setY(temp.get(temp.size()-1).getY()+temp.get(temp.size()-1).getHeight()+25);
 						deleteCard.drawButton(g2d);
 					}
 				}
@@ -280,8 +282,8 @@ public class Game  extends JPanel implements Runnable, KeyListener, MouseListene
 	}
 	
 	public ArrayList<Button> setPlayerButtons(){
-		int x = 10;
-		int y = 500;
+		int x = notepad.getX()+notepad.getWidth()+30;
+		int y = 30;
 		ArrayList<Button> temp = new ArrayList<Button>();
 		for(int i=0; i<players.size(); i++){
 			temp.add(new Button(x,y,"Player "+(i+2), Color.RED, i+2));
